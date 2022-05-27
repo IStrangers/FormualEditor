@@ -1,5 +1,5 @@
 import './App.css';
-import Index from './views/index'
+import Index from 'views/index'
 
 function App() {
   return (

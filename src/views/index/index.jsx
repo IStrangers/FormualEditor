@@ -1,9 +1,12 @@
-import FormualEditor from '@components/FormualEditor'
+import './index.css'
+import FormualEditor from 'components/FormulaEditor'
 
-function Index(){
-    
+function Index() {
+
     return (
-        <FormualEditor className="FormualEditor"></FormualEditor>
+        <div>
+            <FormualEditor></FormualEditor>
+        </div>
     )
 
 }
