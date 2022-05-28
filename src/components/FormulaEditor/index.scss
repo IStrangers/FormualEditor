@@ -1,0 +1,32 @@
+.formual-editor {
+  margin: 10% auto;
+  overflow: auto;
+  width: 500px;
+  height: 350px;
+  font-size: 12px;
+  border: 1px solid rgba(17,31,44,.08);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: left;
+  font-weight: 600;
+
+  .function{
+    color: #770088;
+  }
+  .bracket{
+    color: #997;
+  }
+  .field{
+    color: white;
+    background-color: #178cdf;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+  .operator{
+    color: black;
+  }
+  .number{
+    color: #164;
+  }
+
+}

@@ -1,4 +1,4 @@
-import './App.css';
+import './App.scss';
 import Index from 'views/index'
 
 function App() {

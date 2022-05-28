@@ -1,8 +1,26 @@
-import './index.css'
+import './index.scss'
 
-function FormualEditor() {
+function FormualEditor(props) {
+
+    const {formualTokens} = props;
+
+    const handlingKeyDown = event => {
+        if(event.key === "Backspace"){
+            
+        }
+    }
+    
     return (
-        <div className="formual-editor">
+        <div className="formual-editor" contentEditable={true} onInput={handlingKeyDown}>
+            {
+                formualTokens.map(token => {
+                    return (
+                        <span className={token.type}>
+                            {token.value}
+                        </span>
+                    )
+                })
+            }
         </div>
     )
 }
