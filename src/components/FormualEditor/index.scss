@@ -1,15 +1,29 @@
 .formual-editor {
   margin: 10% auto;
-  overflow: auto;
   width: 500px;
   height: 350px;
   font-size: 12px;
-  border: 1px solid rgba(17,31,44,.08);
+  border: 1px solid rgba(52, 60, 66, 0.08);
   border-radius: 8px;
   padding: 8px;
   text-align: left;
   font-weight: 600;
   outline: none;
+
+  .editor-head{
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(52, 60, 66, 0.08);
+  }
+
+  .editor-code-box{
+    border: 1px solid rgba(52, 60, 66, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    outline: none;
+    overflow: auto;
+    height: calc(100% - 65px);
+  }
 
   .function{
     color: #770088;
