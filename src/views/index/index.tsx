@@ -1,9 +1,10 @@
 import './index.scss'
-import FormualEditor from 'components/FormulaEditor'
+import FormualEditor from 'components/FormualEditor'
+
 
 function Index() {
 
-    const formualTokens = [
+    const formualTokens: Array<FormualToken> = [
         {
             type: "function",
             value: "SUM"
