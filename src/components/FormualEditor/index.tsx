@@ -1,9 +1,19 @@
-import {useState} from 'react'
+import {
+    useState,
+    createRef,
+    useEffect,
+    memo
+} from 'react'
 import "./index.scss"
-import {TokenType,FormualToken,FormualOption,parseFormual} from "util/formualPaser"
+import {
+    TokenType,
+    FormualToken,
+    FormualOption,
+    parseFormual
+} from "util/formualPaser"
 import {
     Button
-} from "@mui/material";
+} from "@mui/material"
 
 interface PropsType{
     formual: string
@@ -11,6 +21,8 @@ interface PropsType{
 }
 
 function FormualEditor(props: PropsType) {
+
+    const editorCodeBox = createRef<HTMLDivElement>()
 
     const [formual,setFormual] = useState<string>(props.formual)
 
@@ -21,20 +33,28 @@ function FormualEditor(props: PropsType) {
     const formualTOkensToHtml = (formualTokens: Array<FormualToken>) : string => {
         const _formualHtml = formualTokens.map(token => {
             return (
-                `<span class=${token.type} contentEditable=${token.type !== TokenType.FIELD}>${token.value}</span>`
+                `<span class="${token.type}" contenteditable="${token.type !== TokenType.FIELD}">${token.value}</span>`
             )
         })
         return _formualHtml.join("")
     }
     const [formualHtml,setFormualHtml] = useState<string>(formualTOkensToHtml(formualTokens))
 
+    useEffect(() => {
+        if (formualHtml !== editorCodeBox.current.innerHTML) {
+            editorCodeBox.current.innerHTML = formualHtml;
+        }
+    })
+
     const editorCodeBoxInput = event => {
-        const _formual: string = event.target.innerText;
-        setFormual(_formual)
-        const _formualTokens: Array<FormualToken> = parseFormual(_formual,option)
-        setFormualTokens(_formualTokens)
-        const _formualHtml: string = formualTOkensToHtml(_formualTokens)
-        setFormualHtml(_formualHtml)
+        const _formual: string = editorCodeBox.current.innerText
+        if(_formual.replace(/[\s\r\n]/g,"") !== formual.replace(/[\s\r\n]/g,"")){
+            setFormual(_formual)
+            const _formualTokens: Array<FormualToken> = parseFormual(_formual,option)
+            setFormualTokens(_formualTokens)
+            const _formualHtml: string = formualTOkensToHtml(_formualTokens)
+            setFormualHtml(_formualHtml)
+        }
     }
 
     const copyFormual = () => {
@@ -47,9 +67,14 @@ function FormualEditor(props: PropsType) {
             <div className="editor-head">      
                 <Button variant="outlined" size="small" onClick={copyFormual}>复制</Button>
             </div>
-            <div className="editor-code-box" suppressContentEditableWarning contentEditable={true} onInput={editorCodeBoxInput} dangerouslySetInnerHTML={{__html:formualHtml}}></div>
+            <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning contentEditable={true} onInput={editorCodeBoxInput} dangerouslySetInnerHTML={{__html:formualHtml}}></div>
         </div>
     )
 }
 
-export default FormualEditor
+function areEqual(prevProps, nextProps) {
+    debugger
+    return false
+}
+
+export default memo(FormualEditor,areEqual)
