@@ -1,11 +1,3 @@
-const FUNCTIONS: Array<string> = [
-    'COUNT',
-    'SUM',
-    'AVG',
-    'MIN',
-    'MAX',
-]
-
 const OPERATORS: Array<string> = [
     '+',
     '-',
@@ -24,12 +16,18 @@ enum TokenType {
     FIELD = 'field',
     OPERATOR = 'operator',
     NUMBER = 'number',
+    ERROR = 'error',
     ENDTOKEN = ''
 }
 
 interface FormualToken {
     type: string
     value: string
+}
+
+interface FormualOption{
+    fields?: Array<string>
+    functions?: Array<string>
 }
 
 interface FormualParse {
@@ -46,8 +44,8 @@ function createFormualParse(formual : string) : FormualParse {
         currentIndex: 0,
         nextToken: function() {
             let sustained = true
-            let token = "";
-            let ch;
+            let token = ""
+            let ch
             while(sustained){
                 ch = this.getChar(this.currentIndex++)
                 if(TokenType.ENDTOKEN === ch) {
@@ -68,47 +66,53 @@ function createFormualParse(formual : string) : FormualParse {
         },
         getChar: function(index) {
             if(formual.length <= index){
-                return TokenType.ENDTOKEN;
+                return TokenType.ENDTOKEN
             }
             return formual.charAt(index)
         }
     }
 }
 
-function parse(formual : string) : Array<FormualToken>{
+function parse(formual : string,option: FormualOption = {}) : Array<FormualToken>{
     const formualTokens: Array<FormualToken> = []
     const formualParse: FormualParse = createFormualParse(formual)
-    let token: string;
+    const functions = option.functions || []
+    const fields = option.fields || []
+    let token: string
     while((token = formualParse.nextToken()) !== TokenType.ENDTOKEN){
-        let formualToken: FormualToken;
+        let formualToken: FormualToken
         if(BRACKETS.indexOf(token) !== -1){
             //括号
-            formualToken = {type:TokenType.BRACKET,value: token};
+            formualToken = {type:TokenType.BRACKET,value: token}
         }else if(OPERATORS.indexOf(token) !== -1){
             //操作符
-            formualToken = {type:TokenType.OPERATOR,value: token};
+            formualToken = {type:TokenType.OPERATOR,value: token}
         }else if(/^([-+])?\d+(\.[0-9]+)?$/.test(token)){
             //数字
-            formualToken = {type:TokenType.NUMBER,value: token};
-        }else if(FUNCTIONS.indexOf(token) !== -1){
+            formualToken = {type:TokenType.NUMBER,value: token}
+        }else if(functions.indexOf(token) !== -1){
             //函数
-            formualToken = {type:TokenType.FUNCTION,value: token};
-        }else {
+            formualToken = {type:TokenType.FUNCTION,value: token}
+        }else if(fields.indexOf(token) !== -1){
             //字段
-            formualToken = {type:TokenType.FIELD,value: token};
+            formualToken = {type:TokenType.FIELD,value: token}
+        }else {
+            //error
+            formualToken = {type:TokenType.ERROR,value: token}
         }
         formualTokens.push(formualToken)
     }
     return formualTokens
 }
 
-function parseFormual(formual : string) : Array<FormualToken> {
-    formual = formual.replace(/\s\r\n/g,"")
-    return parse(formual)
+function parseFormual(formual : string,option: FormualOption) : Array<FormualToken> {
+    formual = formual.replace(/[\s\r\n]/g,"")
+    return parse(formual,option)
 }
 
 export {
     FormualToken,
+    FormualOption,
     TokenType,
     parseFormual
 }
