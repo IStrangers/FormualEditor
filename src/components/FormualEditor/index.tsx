@@ -1,4 +1,4 @@
-import {useRef,useState} from 'react'
+import {useState} from 'react'
 import "./index.scss"
 import {TokenType,FormualToken,parseFormual} from "util/formualPaser"
 import {
@@ -7,14 +7,12 @@ import {
 
 function FormualEditor(props) {
 
-    const editorCodeBox = useRef(null)
-
-    let [formual,setFormual] = useState<string>(props.formual);
+    const [formual,setFormual] = useState<string>(props.formual);
 
     const [formualTokens,setFormualTokens] = useState<Array<FormualToken>>(parseFormual(formual))
     
     const editorCodeBoxInput = event => {
-        const _formual = editorCodeBox.current.innerText;
+        const _formual = event.target.innerText;
         setFormual(_formual)
         setFormualTokens(parseFormual(_formual))
     }
@@ -29,7 +27,7 @@ function FormualEditor(props) {
             <div className="editor-head">      
                 <Button variant="outlined" size="small" onClick={copyFormual}>复制</Button>
             </div>
-            <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning contentEditable={true} onInput={editorCodeBoxInput}>
+            <div className="editor-code-box" suppressContentEditableWarning contentEditable={true} onInput={editorCodeBoxInput}>
                 {
                     formualTokens.map(token => {
                         return (
