@@ -2,7 +2,6 @@ import {
     useState,
     createRef,
     useEffect,
-    memo
 } from 'react'
 import "./index.scss"
 import {
@@ -41,9 +40,7 @@ function FormualEditor(props: PropsType) {
     const [formualHtml,setFormualHtml] = useState<string>(formualTOkensToHtml(formualTokens))
 
     useEffect(() => {
-        if (formualHtml !== editorCodeBox.current.innerHTML) {
-            editorCodeBox.current.innerHTML = formualHtml;
-        }
+
     })
 
     const editorCodeBoxInput = event => {
@@ -64,7 +61,7 @@ function FormualEditor(props: PropsType) {
 
     return (
         <div className="formual-editor">
-            <div className="editor-head">      
+            <div className="editor-head">
                 <Button variant="outlined" size="small" onClick={copyFormual}>复制</Button>
             </div>
             <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning contentEditable={true} onInput={editorCodeBoxInput} dangerouslySetInnerHTML={{__html:formualHtml}}></div>
@@ -72,9 +69,4 @@ function FormualEditor(props: PropsType) {
     )
 }
 
-function areEqual(prevProps, nextProps) {
-    debugger
-    return false
-}
-
-export default memo(FormualEditor,areEqual)
+export default FormualEditor
