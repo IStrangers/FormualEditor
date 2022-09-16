@@ -1,7 +1,6 @@
 import {
     useState,
     createRef,
-    useEffect,
 } from 'react'
 import "./index.scss"
 import {
@@ -21,13 +20,9 @@ interface PropsType{
 
 function FormualEditor(props: PropsType) {
 
-    const editorCodeBox = createRef<HTMLDivElement>()
-
-    const [formual,setFormual] = useState<string>(props.formual)
-
     const option: FormualOption = props.option
 
-    const [formualTokens,setFormualTokens] = useState<Array<FormualToken>>(parseFormual(formual,option))
+    const editorCodeBox = createRef<HTMLDivElement>()
 
     const formualTOkensToHtml = (formualTokens: Array<FormualToken>) : string => {
         const _formualHtml = formualTokens.map(token => {
@@ -37,26 +32,68 @@ function FormualEditor(props: PropsType) {
         })
         return _formualHtml.join("")
     }
-    const [formualHtml,setFormualHtml] = useState<string>(formualTOkensToHtml(formualTokens))
 
-    useEffect(() => {
+    const dirtyTagToSpanTag = children => {
+        for(let i = 0; i < children.length; i++) {
+            const child = children[i]
+            if(child.nodeName !== "SPAN") {
+                let newNode = document.createElement("span")
+                newNode.textContent = child.textContent
+                editorCodeBox.current.insertBefore(newNode,child)
+                editorCodeBox.current.removeChild(child)
+            }
+        }
+    }
+    
+    const inputHandler = (() => {
+        let timer
+        return () => {
+            timer && clearTimeout(timer)
+            setTimeout(() => {
+                const children = editorCodeBox.current.children
+                dirtyTagToSpanTag(children)
+                const selection = document.getSelection()
+                let { focusOffset,focusNode } = selection
+                const replaceNode = focusNode.parentNode
+                if(replaceNode.nodeName !== "SPAN") {
+                    return
+                }
+                const _formual = focusNode.textContent
+                const _formualTokens: Array<FormualToken> = parseFormual(_formual,option)
+                const _formualHtml: string = formualTOkensToHtml(_formualTokens)
 
-    })
+                let doc = new DOMParser().parseFromString(_formualHtml, 'text/html')
+                let newNodes = doc.getElementsByTagName("span")
+                if(newNodes.length > 0) {
+                    while(newNodes.length > 0) {
+                        const newNode = newNodes[0]
+                        editorCodeBox.current.insertBefore(newNode,replaceNode)
+                        if(newNode.childNodes.length <= 0) {
+                            continue
+                        }
+                        const rangeTextNode = newNode.childNodes[0]
+                        if(rangeTextNode.textContent.length < focusOffset) {
+                            focusOffset -= rangeTextNode.textContent.length
+                            continue
+                        }
+                        const range = document.createRange()
+                        range.setStart(rangeTextNode,focusOffset)
+                        range.setEnd(rangeTextNode,focusOffset)
+                        document.getSelection().removeAllRanges()
+                        document.getSelection().addRange(range)
+                    }
+                    editorCodeBox.current.removeChild(replaceNode)
+                }
+            }, 300);
+        }
+    })()
 
     const editorCodeBoxInput = event => {
-        const _formual: string = editorCodeBox.current.innerText
-        if(_formual.replace(/[\s\r\n]/g,"") !== formual.replace(/[\s\r\n]/g,"")){
-            setFormual(_formual)
-            const _formualTokens: Array<FormualToken> = parseFormual(_formual,option)
-            setFormualTokens(_formualTokens)
-            const _formualHtml: string = formualTOkensToHtml(_formualTokens)
-            setFormualHtml(_formualHtml)
-        }
+        inputHandler()
     }
 
     const copyFormual = () => {
-        console.log(formual)
-        console.log(formualTokens)
+
     }
 
     return (
@@ -64,7 +101,10 @@ function FormualEditor(props: PropsType) {
             <div className="editor-head">
                 <Button variant="outlined" size="small" onClick={copyFormual}>复制</Button>
             </div>
-            <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning contentEditable={true} onInput={editorCodeBoxInput} dangerouslySetInnerHTML={{__html:formualHtml}}></div>
+            <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning 
+                contentEditable={true} onInput={editorCodeBoxInput} 
+                dangerouslySetInnerHTML={{__html:formualTOkensToHtml(parseFormual(props.formual,option))}}>
+            </div>
         </div>
     )
 }

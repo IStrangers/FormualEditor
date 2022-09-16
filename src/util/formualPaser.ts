@@ -16,6 +16,7 @@ enum TokenType {
     FIELD = 'field',
     OPERATOR = 'operator',
     NUMBER = 'number',
+    BLANKCHARACTER = 'blankCharacter',
     ERROR = 'error',
     ENDTOKEN = ''
 }
@@ -32,9 +33,10 @@ interface FormualOption{
 
 interface FormualParse {
     formual: string
-    currentIndex: number,
-    getChar(index: number) : string,
-    nextToken() : string,
+    currentIndex: number
+    isSingleChar(ch : string) : boolean
+    getChar(index: number) : string
+    nextToken() : string
     
 }
 
@@ -42,7 +44,15 @@ function createFormualParse(formual : string) : FormualParse {
     return {
         formual,
         currentIndex: 0,
+        isSingleChar(ch) {
+          return OPERATORS.indexOf(ch) !== -1 || BRACKETS.indexOf(ch) !== -1 || /[ \s\r\n]/g.test(ch)
+        },
         nextToken: function() {
+            if(this.directReturnValue) {
+                const temp = this.directReturnValue
+                this.directReturnValue = null
+                return temp
+            }
             let sustained = true
             let token = ""
             let ch
@@ -51,15 +61,18 @@ function createFormualParse(formual : string) : FormualParse {
                 if(TokenType.ENDTOKEN === ch) {
                     return token ? token : TokenType.ENDTOKEN
                 }
-                if(OPERATORS.indexOf(ch) !== -1 || BRACKETS.indexOf(ch) !== -1){
+                if(this.isSingleChar(ch)){
                     token = ch
                     sustained = false
                 }else if(/[A-z0-9\\.\u4e00-\u9fa5-]+/.test(ch)){
                     token += ch
                     let nextChar = this.getChar(this.currentIndex)
-                    if(TokenType.ENDTOKEN === ch || OPERATORS.indexOf(nextChar) !== -1 || BRACKETS.indexOf(nextChar) !== -1){
+                    if(TokenType.ENDTOKEN === ch || this.isSingleChar(nextChar)){
                         sustained = false
                     }
+                } else {
+                    this.directReturnValue = ch
+                    sustained = false
                 }
             }
             return token
@@ -96,6 +109,9 @@ function parse(formual : string,option: FormualOption = {}) : Array<FormualToken
         }else if(fields.indexOf(token) !== -1){
             //字段
             formualToken = {type:TokenType.FIELD,value: token}
+        }else if(/[ \s\r\n]/g.test(token)){
+            //特殊符号
+            formualToken = {type:TokenType.BLANKCHARACTER,value: token}
         }else {
             //error
             formualToken = {type:TokenType.ERROR,value: token}
@@ -106,7 +122,6 @@ function parse(formual : string,option: FormualOption = {}) : Array<FormualToken
 }
 
 function parseFormual(formual : string,option: FormualOption) : Array<FormualToken> {
-    formual = formual.replace(/[\s\r\n]/g,"")
     return parse(formual,option)
 }
 
