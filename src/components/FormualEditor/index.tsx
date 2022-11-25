@@ -1,10 +1,8 @@
 import {
-    useState,
     createRef,
 } from 'react'
 import "./index.scss"
 import {
-    TokenType,
     FormualToken,
     FormualOption,
     parseFormual
@@ -27,7 +25,7 @@ function FormualEditor(props: PropsType) {
     const formualTOkensToHtml = (formualTokens: Array<FormualToken>) : string => {
         const _formualHtml = formualTokens.map(token => {
             return (
-                `<span class="${token.type}" contenteditable="${token.type !== TokenType.FIELD}">${token.value}</span>`
+                `<span class="${token.type}" contenteditable="true">${token.value}</span>`
             )
         })
         return _formualHtml.join("")
@@ -47,7 +45,7 @@ function FormualEditor(props: PropsType) {
     
     const inputHandler = (() => {
         let timer
-        return () => {
+        return (event) => {
             timer && clearTimeout(timer)
             setTimeout(() => {
                 const children = editorCodeBox.current.children
@@ -61,7 +59,6 @@ function FormualEditor(props: PropsType) {
                 const _formual = focusNode.textContent
                 const _formualTokens: Array<FormualToken> = parseFormual(_formual,option)
                 const _formualHtml: string = formualTOkensToHtml(_formualTokens)
-
                 let doc = new DOMParser().parseFromString(_formualHtml, 'text/html')
                 let newNodes = doc.getElementsByTagName("span")
                 if(newNodes.length > 0) {
@@ -75,6 +72,7 @@ function FormualEditor(props: PropsType) {
                         if(rangeTextNode.textContent.length < focusOffset) {
                             focusOffset -= rangeTextNode.textContent.length
                             continue
+                        } else if(newNode.className === "field") {
                         }
                         const range = document.createRange()
                         range.setStart(rangeTextNode,focusOffset)
@@ -89,7 +87,14 @@ function FormualEditor(props: PropsType) {
     })()
 
     const editorCodeBoxInput = event => {
-        inputHandler()
+        if("insertCompositionText" === event.nativeEvent.inputType) {
+            return
+        }
+        inputHandler(event)
+    }
+
+    const editorCodeBoxCompositionEnd = event => {
+        inputHandler(event)
     }
 
     const copyFormual = () => {
@@ -102,7 +107,7 @@ function FormualEditor(props: PropsType) {
                 <Button variant="outlined" size="small" onClick={copyFormual}>复制</Button>
             </div>
             <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning 
-                contentEditable={true} onInput={editorCodeBoxInput} 
+                contentEditable={true} onInput={editorCodeBoxInput} onCompositionEnd={editorCodeBoxCompositionEnd}
                 dangerouslySetInnerHTML={{__html:formualTOkensToHtml(parseFormual(props.formual,option))}}>
             </div>
         </div>
