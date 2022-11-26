@@ -5,14 +5,15 @@ const OPERATORS: Array<string> = [
     '/',
 ]
 
-const BRACKETS: Array<string> = [
+const IDENTIFIER: Array<string> = [
     '(',
     ')',
+    ',',
 ]
 
 enum TokenType {
     FUNCTION = 'function',
-    BRACKET = 'bracket',
+    IDENTIFIER = 'identifier',
     FIELD = 'field',
     OPERATOR = 'operator',
     NUMBER = 'number',
@@ -45,7 +46,7 @@ function createFormualParse(formual : string) : FormualParse {
         formual,
         currentIndex: 0,
         isSingleChar(ch) {
-          return OPERATORS.indexOf(ch) !== -1 || BRACKETS.indexOf(ch) !== -1 || /[ \s\r\n]/g.test(ch)
+          return OPERATORS.indexOf(ch) !== -1 || IDENTIFIER.indexOf(ch) !== -1 || /[ \s\r\n]/g.test(ch)
         },
         nextToken: function() {
             if(this.directReturnValue) {
@@ -94,9 +95,9 @@ function parse(formual : string,option: FormualOption = {}) : Array<FormualToken
     let token: string
     while((token = formualParse.nextToken()) !== TokenType.ENDTOKEN){
         let formualToken: FormualToken
-        if(BRACKETS.indexOf(token) !== -1){
-            //括号
-            formualToken = {type:TokenType.BRACKET,value: token}
+        if(IDENTIFIER.indexOf(token) !== -1){
+            //标识符
+            formualToken = {type:TokenType.IDENTIFIER,value: token}
         }else if(OPERATORS.indexOf(token) !== -1){
             //操作符
             formualToken = {type:TokenType.OPERATOR,value: token}

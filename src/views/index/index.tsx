@@ -3,10 +3,11 @@ import FormualEditor from 'components/FormualEditor'
 
 function Index() {
 
-    const formual = "SUM(金额)*998.88"
+    const formual = "SUM(单价*数量,AVG(5,10),MIN(2,8),MAX(8,2),100)*998.88"
     const option = {
         fields: [
-            '金额'
+            '单价',
+            '数量',
         ],
         functions: [
             'COUNT',
