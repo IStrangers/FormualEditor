@@ -108,7 +108,7 @@ function FormualEditor(props: PropsType) {
             </div>
             <div ref={editorCodeBox} className="editor-code-box" suppressContentEditableWarning 
                 contentEditable={true} onInput={editorCodeBoxInput} onCompositionEnd={editorCodeBoxCompositionEnd}
-                dangerouslySetInnerHTML={{__html:formualTOkensToHtml(parseFormual(props.formual,option))}}>
+                dangerouslySetInnerHTML={{__html:formualTokensToHtml(parseFormual(props.formual,option))}}>
             </div>
         </div>
     )
