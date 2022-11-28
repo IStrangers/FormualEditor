@@ -22,7 +22,7 @@ function FormualEditor(props: PropsType) {
 
     const editorCodeBox = createRef<HTMLDivElement>()
 
-    const formualTOkensToHtml = (formualTokens: Array<FormualToken>) : string => {
+    const formualTokensToHtml = (formualTokens: Array<FormualToken>) : string => {
         const _formualHtml = formualTokens.map(token => {
             return (
                 `<span class="${token.type}" contenteditable="true">${token.value}</span>`
@@ -58,7 +58,7 @@ function FormualEditor(props: PropsType) {
                 }
                 const _formual = focusNode.textContent
                 const _formualTokens: Array<FormualToken> = parseFormual(_formual,option)
-                const _formualHtml: string = formualTOkensToHtml(_formualTokens)
+                const _formualHtml: string = formualTokensToHtml(_formualTokens)
                 let doc = new DOMParser().parseFromString(_formualHtml, 'text/html')
                 let newNodes = doc.getElementsByTagName("span")
                 if(newNodes.length > 0) {
