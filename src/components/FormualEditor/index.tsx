@@ -47,7 +47,7 @@ function FormualEditor(props: PropsType) {
         let timer
         return (event) => {
             timer && clearTimeout(timer)
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 const children = editorCodeBox.current.children
                 dirtyTagToSpanTag(children)
                 const selection = document.getSelection()
