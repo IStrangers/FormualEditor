@@ -1,70 +1,112 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# 公式编辑器 (FormualEditor)
 
-In the project directory, you can run:
+一个基于 React + TypeScript 的公式编辑器组件，支持数学公式的解析与编辑。
 
-### `npm start`
+## 功能特性
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 📝 公式编辑：支持编辑数学公式
+- 🔧 公式解析：内置公式解析器，支持词法分析
+- 🎨 自定义样式：支持 SCSS 样式定制
+- 📦 组件化设计：易于集成到现有项目中
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 技术栈
 
-### `npm test`
+- React 17
+- TypeScript
+- SCSS
+- Create React App
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 快速开始
 
-### `npm run build`
+### 安装依赖
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm install
+# 或使用 yarn
+yarn install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 开发模式
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+npm start
+```
 
-### `npm run eject`
+启动后访问 [http://localhost:3000](http://localhost:3000)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 构建生产版本
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm run build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+构建产物将生成在 `build` 目录中。
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 公式解析器使用
 
-## Learn More
+项目内置了公式解析工具，支持将公式字符串解析为词法单元（Token）。
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 基本用法
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```typescript
+import { parseFormual } from './util/formualPaser';
 
-### Code Splitting
+// 解析公式字符串
+const tokens = parseFormual('a + b * c', { /* options */ });
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+console.log(tokens);
+```
 
-### Analyzing the Bundle Size
+### 解析选项
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+`parseFormual` 函数接受以下选项：
 
-### Making a Progressive Web App
+- `formual`: 要解析的公式字符串
+- `option`: 可选的解析配置
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 支持的运算符
 
-### Advanced Configuration
+解析器支持常见的数学运算符，包括但不限于：
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `+` (加法)
+- `-` (减法)
+- `*` (乘法)
+- `/` (除法)
+- `^` (幂运算)
+- `(` `)` (括号)
 
-### Deployment
+## 项目结构
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+src/
+├── components/
+│   └── FormualEditor/     # 公式编辑器组件
+├── util/
+│   └── formualPaser.ts   # 公式解析器
+├── views/
+│   └── index/            # 主页视图
+├── App.js                # 应用入口
+└── index.js              # 根组件
+```
 
-### `npm run build` fails to minify
+## 集成到现有项目
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+将 `FormualEditor` 组件导入您的项目：
+
+```typescript
+import FormualEditor from './components/FormualEditor';
+
+function App() {
+  return (
+    <div>
+      <FormualEditor onChange={(value) => console.log(value)} />
+    </div>
+  );
+}
+```
+
+## 许可证
+
+MIT License
